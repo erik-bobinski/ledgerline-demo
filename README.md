@@ -1,2 +1,5 @@
-# ledgerline-demo
-Public signed-in dashboard demo of Ledgerline for resume sharing
+# Ledgerline dashboard demo
+
+Public signed-in walkthrough of the Ledgerline dashboard (Plaid Sandbox test data).
+
+**Watch:** https://cdn.jsdelivr.net/gh/erik-bobinski/ledgerline-demo@main/index.html
