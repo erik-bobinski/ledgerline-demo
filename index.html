@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ledgerline — dashboard demo</title>
+    <meta
+      name="description"
+      content="A short signed-in walkthrough of Ledgerline, a personal finance dashboard."
+    />
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f6f3ee;
+        --ink: #1c1917;
+        --muted: #57534e;
+        --card: #fffdf9;
+        --line: #e7e0d6;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          sans-serif;
+        background: var(--bg);
+        color: var(--ink);
+        line-height: 1.5;
+      }
+      main {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 48px 20px 72px;
+      }
+      h1 {
+        margin: 0 0 8px;
+        font-size: 2rem;
+        letter-spacing: -0.03em;
+      }
+      .lede {
+        margin: 0 0 28px;
+        color: var(--muted);
+        max-width: 42rem;
+      }
+      .player {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 16px 40px rgba(28, 25, 23, 0.08);
+        min-height: 240px;
+      }
+      video {
+        display: block;
+        width: 100%;
+        height: auto;
+        background: #111;
+      }
+      .status {
+        margin: 0;
+        padding: 48px 24px;
+        text-align: center;
+        color: var(--muted);
+      }
+      .note {
+        margin: 16px 0 0;
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Ledgerline</h1>
+      <p class="lede">
+        Signed-in dashboard demo. All connected accounts are treated as one blob,
+        then the month’s leftover is income minus expense.
+      </p>
+      <div class="player">
+        <p id="status" class="status">Loading demo…</p>
+        <video
+          id="demo"
+          controls
+          autoplay
+          muted
+          playsinline
+          preload="metadata"
+          hidden
+        ></video>
+      </div>
+      <p class="note">
+        Recorded with the development test user and Plaid Sandbox data. Not live
+        bank credentials.
+      </p>
+    </main>
+    <script>
+      const CHUNK_COUNT = 3;
+      async function loadDemo() {
+        const status = document.getElementById("status");
+        const video = document.getElementById("demo");
+        try {
+          const parts = await Promise.all(
+            Array.from({ length: CHUNK_COUNT }, (_, i) =>
+              fetch(`chunks/${String(i).padStart(2, "0")}.txt`).then((res) => {
+                if (!res.ok) throw new Error("Missing demo chunk " + i);
+                return res.text();
+              }),
+            ),
+          );
+          const binary = atob(parts.join(""));
+          const bytes = new Uint8Array(binary.length);
+          for (let i = 0; i < binary.length; i += 1) {
+            bytes[i] = binary.charCodeAt(i);
+          }
+          const url = URL.createObjectURL(
+            new Blob([bytes], { type: "video/mp4" }),
+          );
+          video.src = url;
+          video.hidden = false;
+          status.remove();
+          await video.play().catch(() => {});
+        } catch (error) {
+          status.textContent =
+            "Could not load the demo video. Refresh, or open dashboard.mp4 if present.";
+        }
+      }
+      loadDemo();
+    </script>
+  </body>
+</html>
