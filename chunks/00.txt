@@ -1,1 +1,1 @@
-@/tmp/ledgerline-demo/chunks/00.txt
+FILE_TEXT:/tmp/ledgerline-demo/chunks/00.txt
