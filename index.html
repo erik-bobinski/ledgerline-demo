@@ -76,20 +76,24 @@
     ></video>
     <script>
       const CHUNK_COUNT = 6;
+      const HOSTED_MP4 =
+        "https://cdn.jsdelivr.net/gh/erik-bobinski/ledgerline-demo@main/dashboard.mp4";
       async function loadDemo() {
         const status = document.getElementById("status");
         const video = document.getElementById("demo");
-        try {
-          const direct = await fetch("dashboard.mp4", { method: "HEAD" });
-          if (direct.ok) {
-            video.src = "dashboard.mp4";
-            video.hidden = false;
-            status.remove();
-            await video.play().catch(() => {});
-            return;
+        for (const src of ["dashboard.mp4", HOSTED_MP4]) {
+          try {
+            const direct = await fetch(src, { method: "HEAD" });
+            if (direct.ok) {
+              video.src = src;
+              video.hidden = false;
+              status.remove();
+              await video.play().catch(() => {});
+              return;
+            }
+          } catch {
+            /* try next source */
           }
-        } catch {
-          /* fall through to chunked payload */
         }
         const parts = await Promise.all(
           Array.from({ length: CHUNK_COUNT }, (_, i) =>
